@@ -1,0 +1,55 @@
+from django.db import models
+from django.conf import settings
+from django.utils.text import slugify
+# Create your models here.
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=150, unique=True)
+
+    class Meta:
+        verbose_name_plural = "categories"
+
+    def __str__(self):
+        return self.name
+
+
+class Post(models.Model):
+    class Status(models.TextChoices):
+        DRAFT = "draft", "Draft"
+        PUBLISHED = "published", "Published"
+        SCHEDULED = "scheduled", "Scheduled"
+
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=200, unique=True, blank=True)
+
+    category = models.ForeignKey(
+        Category, on_delete=models.SET_NULL, null=True, blank=True, related_name="posts")
+
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="posts")
+
+    content = models.TextField()
+
+    status = models.CharField(
+        max_length=10, choices=Status.choices, default=Status.DRAFT)
+
+    published_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-published_at"]
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            base = slugify(self.title)
+            slug = base
+            counter = 1
+            while Post.objects.filter(slug=slug).exists():
+                counter += 1
+                slug = f"{base}-{counter}"
+            self.slug = slug
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.title} {self.author} {self.status} {self.published_at}"
