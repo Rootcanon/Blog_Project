@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.utils.text import slugify
+from django.utils import timezone
 # Create your models here.
 
 
@@ -41,6 +42,13 @@ class Post(models.Model):
         ordering = ["-published_at"]
 
     def save(self, *args, **kwargs):
+        if self.pk:
+            original = Post.objects.get(pk=self.pk)
+            if (original.status != self.Status.PUBLISHED
+                    and self.status == self.Status.PUBLISHED
+                    and not self.published_at):
+                self.published_at = timezone.now()
+
         if not self.pk:
             base = slugify(self.title)
             slug = base
