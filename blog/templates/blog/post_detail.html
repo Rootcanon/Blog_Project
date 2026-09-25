@@ -13,6 +13,6 @@
         <a href="#">{{ post.category.name }}</a>
       {% endif %}
     </div>
-    <div>{{ post.content|linebreaks }}</div>
+    <div>{{ post.content|safe }}</div>
   </article>
 {% endblock %}

@@ -10,7 +10,7 @@
           {{ post.category.name }}
         {% endif %}
       </div>
-      <p>{{ post.content|truncatewords:30 }}</p>
+      <p>{{ post.content|striptags|truncatewords:30 }}</p>
     </article>
     <hr />
   {% empty %}

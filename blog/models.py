@@ -3,6 +3,7 @@ from django.conf import settings
 from django.utils.text import slugify
 from django.utils import timezone
 from django.urls import reverse
+from ckeditor_uploader.fields import RichTextUploadingField
 # Create your models here.
 
 
@@ -32,7 +33,7 @@ class Post(models.Model):
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="posts")
 
-    content = models.TextField()
+    content = RichTextUploadingField()
 
     status = models.CharField(
         max_length=10, choices=Status.choices, default=Status.DRAFT)
