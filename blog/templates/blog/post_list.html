@@ -5,10 +5,13 @@
     <article>
       <h2><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
       <div class="post-meta">
-        {{ post.published_at|date:'M d, Y' }} {{ post.author }}
+        {{ post.published_at|date:'M d, Y' }} · {{ post.author }}
         {% if post.category %}
-          {{ post.category.name }}
+          · <a href="{% url 'category_posts' post.category.slug %}">{{ post.category.name }}</a>
         {% endif %}
+        {% for tag in post.tags.all %}
+          · <a href="{% url 'tag_posts' tag.slug %}">#{{ tag.name }}</a>
+        {% endfor %}
       </div>
       <p>{{ post.content|striptags|truncatewords:30 }}</p>
     </article>

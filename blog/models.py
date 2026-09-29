@@ -4,6 +4,7 @@ from django.utils.text import slugify
 from django.utils import timezone
 from django.urls import reverse
 from ckeditor_uploader.fields import RichTextUploadingField
+from taggit.managers import TaggableManager
 # Create your models here.
 
 
@@ -39,6 +40,7 @@ class Post(models.Model):
         max_length=10, choices=Status.choices, default=Status.DRAFT)
 
     published_at = models.DateTimeField(null=True, blank=True)
+    tags = TaggableManager(blank=True)
 
     class Meta:
         ordering = ["-published_at"]
@@ -63,7 +65,22 @@ class Post(models.Model):
 
     def get_absolute_url(self):
         return reverse("post_detail", kwargs={"slug": self.slug})
-    
 
     def __str__(self):
         return f"{self.title} {self.author} {self.status} {self.published_at}"
+
+
+class AuthorProfile(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="author_profile"
+    )
+    bio = models.TextField(blank=True)
+    avatar = models.ImageField(upload_to="avatars/", blank=True, null=True)
+
+    def post_count(self):
+        return self.user.posts.filter(status=Post.Status.PUBLISHED).count()
+
+    def __str__(self):
+        return f"{self.user.username}'s Profile"
