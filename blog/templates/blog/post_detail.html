@@ -8,7 +8,13 @@
   <article>
     <h1>{{ post.title }}</h1>
     <div class="post-meta">
-      {{ post.published_at|date:'M d, Y' }} · <a href="{% url 'author_posts' post.author.username }}">{{ post.author.get_full_name|default:post.author.username }}</a>
+      {{ post.published_at|date:'M d, Y' }} · <a href="{% url 'author_posts' post.author.username %}">
+        {% if post.author.get_full_name %}
+          {{ post.author.get_full_name }}
+        {% else %}
+          {{ post.author.username }}
+        {% endif %}
+      </a>
       {% if post.category %}
         · <a href="{% url 'category_posts' post.category.slug %}">{{ post.category.name }}</a>
       {% endif %}
@@ -18,4 +24,52 @@
     </div>
     <div>{{ post.content|safe }}</div>
   </article>
+
+  <section class="comments-section">
+    <h2>Comments ({{ comments.count }})</h2>
+
+    {% if comments %}
+      <div class="comments-list">
+        {% for comment in comments %}
+          <div class="comment">
+            <div class="comment-meta">
+              <strong>{{ comment.name }}</strong> · {{ comment.created_at|date:'M d, Y H:i' }}
+            </div>
+            <div class="comment-content">{{ comment.content|linebreaks }}</div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>No comments yet. Be the first to comment!</p>
+    {% endif %}
+
+    <div class="comment-form">
+      <h3>Leave a Comment</h3>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <div>
+          {{ comment_form.name.label_tag }}
+          {{ comment_form.name }}
+          {% if comment_form.name.errors %}
+            <div>{{ comment_form.name.errors }}</div>
+          {% endif %}
+        </div>
+        <div>
+          {{ comment_form.email.label_tag }}
+          {{ comment_form.email }}
+          {% if comment_form.email.errors %}
+            <div>{{ comment_form.email.errors }}</div>
+          {% endif %}
+        </div>
+        <div>
+          {{ comment_form.content.label_tag }}
+          {{ comment_form.content }}
+          {% if comment_form.content.errors %}
+            <div>{{ comment_form.content.errors }}</div>
+          {% endif %}
+        </div>
+        <button type="submit">Submit Comment</button>
+      </form>
+    </div>
+  </section>
 {% endblock %}

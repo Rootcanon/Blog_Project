@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils import timezone
 
-from .models import Category, Post, AuthorProfile
+from .models import Category, Post, AuthorProfile, Comment
 # Register your models here.
 
 
@@ -45,6 +45,23 @@ class AuthorProfileAdmin(admin.ModelAdmin):
         return obj.post_count()
 
 
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ("name", "post", "created_at", "is_approved")
+    list_filter = ("is_approved", "created_at")
+    search_fields = ("name", "email", "content")
+    actions = ["approve_comments", "reject_comments"]
+
+    def approve_comments(self, request, queryset):
+        updated = queryset.update(is_approved=True)
+        self.message_user(request, f"{updated} comment(s) approved")
+    approve_comments.short_description = 'Approve selected comments'
+
+    def reject_comments(self, request, queryset):
+        updated = queryset.update(is_approved=False)
+        self.message_user(request, f"{updated} comment(s) rejected")
+    reject_comments.short_description = "Reject selected comments"
+
 admin.site.register(Post, PostAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(AuthorProfile, AuthorProfileAdmin)
+admin.site.register(Comment, CommentAdmin)
