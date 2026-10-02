@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils import timezone
 
-from .models import Category, Post, AuthorProfile, Comment
+from .models import Category, Post, AuthorProfile, Comment, Subscriber
 # Register your models here.
 
 
@@ -61,7 +61,26 @@ class CommentAdmin(admin.ModelAdmin):
         self.message_user(request, f"{updated} comment(s) rejected")
     reject_comments.short_description = "Reject selected comments"
 
+
+class SubscriberAdmin(admin.ModelAdmin):
+    list_display = ("email", "is_active", "created_at", "unsubscribe_token")
+    list_filter = ("is_active", "created_at")
+    search_fields = ("email",)
+    readonly_fields = ("unsubscribe_token", "created_at")
+    list_editable = ("is_active",)
+    actions = ["activate_subscribers", "deactivate_subscribers"]
+
+    def activate_subscribers(self, request, queryset):
+        updated = queryset.update(is_active=True)
+        self.message_user(request, f"{updated} subscriber(s) activated")
+    activate_subscribers.short_description = "Activate selected subscribers"
+
+    def deactivate_subscribers(self, request, queryset):
+        updated = queryset.update(is_active=False)
+        self.message_user(request, f"{updated} subscriber(s) deactivated")
+
 admin.site.register(Post, PostAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(AuthorProfile, AuthorProfileAdmin)
 admin.site.register(Comment, CommentAdmin)
+admin.site.register(Subscriber, SubscriberAdmin)

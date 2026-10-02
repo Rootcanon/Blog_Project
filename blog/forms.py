@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Comment
+from .models import Comment, Subscriber
 
 
 class CommentForm(forms.ModelForm):
@@ -23,3 +23,21 @@ class CommentForm(forms.ModelForm):
                 "placeholder": "Write your comment..."
             }),
         }
+
+
+class SubscriberForm(forms.Form):
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={
+            "class": "form-control",
+            "placeholder": "Enter your Email to Subscribe"
+        }),
+    )
+
+    # class Meta:
+    #     model = Subscriber
+    #     fields = ["email"]
+    #     validate_unique = False
+
+    def clean_email(self):
+        email = self.cleaned_data["email"].lower()
+        return email

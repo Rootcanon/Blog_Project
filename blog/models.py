@@ -5,6 +5,8 @@ from django.utils import timezone
 from django.urls import reverse
 from ckeditor_uploader.fields import RichTextUploadingField
 from taggit.managers import TaggableManager
+import uuid
+from django.core.signing import Signer
 # Create your models here.
 
 
@@ -104,4 +106,21 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.name} on {self.post.title}"
-    
+
+
+class Subscriber(models.Model):
+    email = models.EmailField(unique=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    unsubscribe_token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+
+    class Meta():
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.email
+
+    def get_unsubscribe_url(self):
+        signer = Signer()
+        signed_token = signer.sign(str(self.unsubscribe_token))
+        return reverse("unsubscribe", kwargs={"signed_token": signed_token})
