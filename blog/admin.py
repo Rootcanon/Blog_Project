@@ -12,14 +12,16 @@ class PostAdmin(admin.ModelAdmin):
     actions = ["make_published"]
 
     def make_published(self, request, queryset):
-        updated = queryset.filter(
+        to_publish = queryset.filter(
             status__in=[Post.Status.DRAFT, Post.Status.SCHEDULED]
-        ).update(
-            status=Post.Status.PUBLISHED,
-            published_at=timezone.now()
         )
-        self.message_user(request, f"{updated} post(s) published")
-    make_published.short_description = "Publish selected posts now"
+        updated_count = 0
+        for post in to_publish:
+            post.status = Post.Status.PUBLISHED
+            post.save()
+            updated_count += 1
+
+        self.message_user(request, f"{updated_count} post(s) published")
 
     def tag_list(self, obj):
         return ", ".join(o.name for o in obj.tags.all())
@@ -78,6 +80,7 @@ class SubscriberAdmin(admin.ModelAdmin):
     def deactivate_subscribers(self, request, queryset):
         updated = queryset.update(is_active=False)
         self.message_user(request, f"{updated} subscriber(s) deactivated")
+
 
 admin.site.register(Post, PostAdmin)
 admin.site.register(Category, CategoryAdmin)

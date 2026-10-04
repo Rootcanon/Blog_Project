@@ -125,11 +125,11 @@ STATIC_URL = 'static/'
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
-MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
-    },
-}
+# MAILERS = {
+#     'default': {
+#         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
+#     },
+# }
 
 # Media files (user uploads)
 MEDIA_URL = "/media/"
@@ -145,3 +145,8 @@ CKEDITOR_CONFIGS = {
         'width': '100%',
     },
 }
+
+# Email settings
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = "noreply@yourdomain.com"
+SITE_URL = "http://127.0.0.1:8000"
