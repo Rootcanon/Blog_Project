@@ -147,4 +147,20 @@ class Subscriber(models.Model):
     def get_unsubscribe_url(self):
         signer = Signer()
         signed_token = signer.sign(str(self.unsubscribe_token))
-        return reverse("unsubscribe", kwargs={"signed_token": signed_token})
+        return reverse("blog:unsubscribe", kwargs={"signed_token": signed_token})
+
+
+class VisitCount(models.Model):
+    post = models.OneToOneField(
+        Post, 
+        on_delete=models.CASCADE,
+        related_name="visit_count"
+    )
+    count =models.PositiveIntegerField(default=0)
+    last_visited = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-count"]
+
+    def __str__(self):
+        return f"{self.post.title}: {self.count} visits"

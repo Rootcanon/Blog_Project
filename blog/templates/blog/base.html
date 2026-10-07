@@ -13,7 +13,7 @@
 
   <body>
     <header>
-      <h1><a href="{% url 'post_list' %}">My Blog</a></h1>
+      <h1><a href="{% url 'blog:post_list' %}">My Blog</a></h1>
     </header>
     <main>
       {% if messages %}
@@ -32,7 +32,7 @@
         <section class="newsletter">
           <h3>Subscribe to Newsletter</h3>
           {% comment %} <form method="post" action="{% url 'subscribe' %}"> {% endcomment %}
-          <form method="post" action="{% url 'subscribe' %}">
+<form method="post" action="{% url 'blog:subscribe' %}">
             {% csrf_token %}
             <div>
               {{ subscribe_form.email }}

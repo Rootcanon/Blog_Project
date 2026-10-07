@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils import timezone
 
-from .models import Category, Post, AuthorProfile, Comment, Subscriber
+from .models import Category, Post, AuthorProfile, Comment, Subscriber, VisitCount
 # Register your models here.
 
 
@@ -81,9 +81,16 @@ class SubscriberAdmin(admin.ModelAdmin):
         updated = queryset.update(is_active=False)
         self.message_user(request, f"{updated} subscriber(s) deactivated")
 
+class VisitCountAdmin(admin.ModelAdmin):
+    list_display = ("post", "count", "last_visited")
+    list_filter = ("last_visited",)
+    search_fields = ("post__title",)
+    readonly_fields = ("post", "last_visited")
+
 
 admin.site.register(Post, PostAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(AuthorProfile, AuthorProfileAdmin)
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(Subscriber, SubscriberAdmin)
+admin.site.register(VisitCount, VisitCountAdmin)
