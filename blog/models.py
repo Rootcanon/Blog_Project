@@ -73,7 +73,7 @@ class Post(models.Model):
             self.send_publish_notifications()
 
     def get_absolute_url(self):
-        return reverse("post_detail", kwargs={"slug": self.slug})
+        return reverse("blog:post_detail", kwargs={"slug": self.slug})
 
     def __str__(self):
         return f"{self.title} {self.author} {self.status} {self.published_at}"
